@@ -36,7 +36,12 @@ export const REQUIRED_ROOT_FILES = ["LICENSE", "NOTICE", "README.md", "package.j
 // published build that dropped them would still import, and fail at the first task.
 export const REQUIRED_ROOT_EXPORTS = ["Bundle", "Dag", "TaskHandler", "getClient", "getContext"];
 
+const ALLOWED_COMMANDS = new Set(['npm', 'pnpm', 'node', 'tar', 'gzip']);
+
 function run(command, args, options = {}) {
+  if (!ALLOWED_COMMANDS.has(command)) {
+    throw new Error(`Command '${command}' is not in the allowlist of permitted commands: ${Array.from(ALLOWED_COMMANDS).join(', ')}`);
+  }
   const result = spawnSync(command, args, {
     encoding: "utf8",
     timeout: COMMAND_TIMEOUT_MS,
